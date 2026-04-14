@@ -1,6 +1,7 @@
-﻿namespace SistemaMatricula.Data
-{
-    public class Data
-    {
-    }
-}
+﻿HOLAAAAAASistemaMatricula.Data
+HOLAAAAAA
+HOLAAAAAA class Data
+HOLAAAAAA
+HOLAAAAAA
+HOLAAAAAA
+HOLAAAAAA
