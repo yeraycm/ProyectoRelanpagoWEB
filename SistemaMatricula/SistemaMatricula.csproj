@@ -11,8 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
+    <Folder Include="Controllers\NewFolder\" />
+    <Folder Include="Data\" />
+    <Folder Include="Models\NewFolder\" />
   </ItemGroup>
 
 </Project>
