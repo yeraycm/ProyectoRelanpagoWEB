@@ -1,3 +1,4 @@
-wwwroot\aspirante.html
-wwwroot\EncargadoMatricula.html
 wwwroot\app.js
+wwwroot\EncargadoMatricula.html
+wwwroot\aspirante.html
+wwwroot\Menu.html

@@ -28,7 +28,7 @@ if (app.Environment.IsDevelopment())
     // La primera se abre mediante launchSettings.json
     try
     {
-        var urlAspirante = "http://localhost:5262/aspirante.html";
+        var urlAspirante = "http://localhost:5262/Menu.html";
         Process.Start(new ProcessStartInfo
         {
             FileName = urlAspirante,

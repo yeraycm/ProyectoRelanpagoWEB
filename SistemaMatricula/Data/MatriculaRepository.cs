@@ -261,6 +261,43 @@ namespace SistemaMatricula.Data
             }
             return null; // Si no tiene cita asignada
         }
+        public bool ExisteCita(int idAspirante)
+        {
+            // Usamos 'using' para asegurar que la conexión se cierre sola
+            using (var con = new SqlConnection(_connectionString))
+            {
+                // Consulta SQL para contar si ya existe ese ID en la tabla de citas
+                string sql = "SELECT COUNT(1) FROM Citas WHERE IdAspirante = @id";
+
+                // Ejecutamos la consulta
+                // Si usas Dapper:
+                // int conteo = con.ExecuteScalar<int>(sql, new { id = idAspirante });
+
+                // Si usas ADO.NET puro:
+                using (var cmd = new SqlCommand(sql, con))
+                {
+                    cmd.Parameters.AddWithValue("@id", idAspirante);
+                    con.Open();
+                    int conteo = (int)cmd.ExecuteScalar();
+                    return conteo > 0;
+                }
+            }
+        }
+        public bool ExisteAspirantePorEmail(string email)
+        {
+            using (var con = new SqlConnection(_connectionString))
+            {
+                // Buscamos si el email ya existe en la tabla aspirantes
+                string sql = "SELECT COUNT(1) FROM aspirantes WHERE email = @email";
+                using (var cmd = new SqlCommand(sql, con))
+                {
+                    cmd.Parameters.AddWithValue("@email", email);
+                    con.Open();
+                    int existe = (int)cmd.ExecuteScalar();
+                    return existe > 0;
+                }
+            }
+        }
     }
 
 }
