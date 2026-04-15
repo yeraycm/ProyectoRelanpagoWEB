@@ -36,6 +36,7 @@
 </head>
 <body>
     <div class="container mt-5">
+        <div id="menu-container"></div>
         <div class="header shadow text-center">
             <h2>Registro y Solicitud de Cita</h2>
         </div>
@@ -94,6 +95,22 @@
     </div>
 
     <script>
+        //  funcioon del menu
+        function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            } else {
+                console.error("El elemento sidebar no se encuentra.");
+            }
+        }
+    
+        fetch('Menu.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('menu-container').innerHTML = data;
+        });
+        
         // Cargar carreras dinámicamente desde el controlador Aspirantes
         async function cargarCarreras() {
             try {
