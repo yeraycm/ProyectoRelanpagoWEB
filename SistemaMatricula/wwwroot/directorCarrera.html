@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Director de Carrera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f4f7fb;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .btn-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 2000;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(180deg, #1e3a8a, #2563eb);
+            position: fixed;
+            left: -250px;
+            top: 0;
+            transition: 0.4s;
+            z-index: 1500;
+            padding-top: 80px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+
+            .sidebar.active {
+                left: 0;
+            }
+
+            .sidebar h3 {
+                text-align: center;
+                color: white;
+                margin-bottom: 30px;
+                font-family: 'Outfit', sans-serif;
+            }
+
+            .sidebar a {
+                display: block;
+                padding: 15px 25px;
+                color: white;
+                text-decoration: none;
+                transition: 0.3s;
+                font-family: 'Outfit', sans-serif;
+                font-size: 1.1rem;
+            }
+
+                .sidebar a:hover {
+                    background: rgba(255, 255, 255, 0.2);
+                    padding-left: 35px;
+                }
+
+        .content {
+            padding: 90px 30px 30px 30px;
+        }
+
+        .card-custom {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <button class="btn-toggle" onclick="toggleMenu()">? Menú</button>
+
+    <div class="sidebar" id="sidebar">
+        <h3><i class="bi bi-grid"></i> Sistema</h3>
+        <a href="EncargadoMatricula.html"><i class="bi bi-people"></i> Gestion de Aspirantes</a>
+        <a href="aspirante.html"><i class="bi bi-person-plus"></i> Solicitud de Citas</a>
+        <a href="directorCarrera.html"><i class="bi bi-mortarboard"></i> Director Carrera</a>
+    </div>
+
+    <div class="content">
+        <div class="card-custom">
+            <h2 class="mb-3"><i class="bi bi-mortarboard-fill"></i> Director de Carrera</h2>
+
+            <div class="mb-3">
+                <label class="form-label">ID del Director</label>
+                <input type="number" id="idDirector" class="form-control" value="1" required>
+            </div>
+
+            <button class="btn btn-primary" onclick="cargarMatriculados()">Consultar matriculados</button>
+        </div>
+
+        <div class="card-custom">
+            <h4>Lista de aspirantes matriculados</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered mt-3">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Carrera</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyMatriculados"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-custom">
+            <h4>Enviar correo masivo</h4>
+            <form id="formCorreo">
+                <div class="mb-3">
+                    <label class="form-label">Asunto</label>
+                    <input type="text" id="asunto" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Mensaje</label>
+                    <textarea id="mensaje" class="form-control" rows="5" required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-send"></i> Enviar correos
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('active');
+            }
+        }
+
+        async function cargarMatriculados() {
+            const idDirector = parseInt(document.getElementById('idDirector').value) || 1;
+
+            try {
+                const response = await fetch(`/api/director/matriculados/${idDirector}`);
+                if (!response.ok) {
+                    throw new Error('No se pudo cargar la lista.');
+                }
+
+                const data = await response.json();
+                const tbody = document.getElementById('tbodyMatriculados');
+                tbody.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `
+                            <tr>
+                                <td colspan="5" class="text-center">No se encontraron matriculados para este director.</td>
+                            </tr>
+                        `;
+                    return;
+                }
+
+                data.forEach(item => {
+                    tbody.innerHTML += `
+                            <tr>
+                                <td>${item.id_aspirante}</td>
+                                <td>${item.nombre}</td>
+                                <td>${item.apellido}</td>
+                                <td>${item.email}</td>
+                                <td>${item.carrera_interes}</td>
+                            </tr>
+                        `;
+                });
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        document.getElementById('formCorreo').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const idDirector = parseInt(document.getElementById('idDirector').value);
+
+            if (!idDirector || idDirector <= 0) {
+                alert('Ingrese un ID de director válido.');
+                return;
+            }
+
+            const payload = {
+                idDirector: idDirector,
+                asunto: document.getElementById('asunto').value,
+                mensaje: document.getElementById('mensaje').value
+            };
+
+            try {
+                const response = await fetch('/api/director/enviar-correo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error('No se pudieron enviar los correos.');
+                }
+
+                const data = await response.json();
+                alert(data.mensaje);
+                document.getElementById('formCorreo').reset();
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarMatriculados();
+        });
+    </script>
+</body>
+</html>

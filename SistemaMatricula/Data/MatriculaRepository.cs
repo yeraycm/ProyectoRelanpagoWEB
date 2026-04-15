@@ -298,6 +298,92 @@ namespace SistemaMatricula.Data
                 }
             }
         }
+
+        public List<object> ObtenerMatriculadosPorDirector(int idDirector)
+        {
+            var lista = new List<object>();
+
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            var query = @"
+        SELECT 
+            a.id_aspirante,
+            a.nombre,
+            a.apellido,
+            a.email,
+            a.carrera_interes
+        FROM aspirantes a
+        INNER JOIN modulo_gestion_aspirante m
+            ON a.id_aspirante = m.id_aspirante
+        INNER JOIN directores_carrera d
+            ON d.id_director = @idDirector
+        WHERE a.carrera_interes = d.carrera
+          AND ISNULL(m.indicar_matricula, 0) = 1";
+
+            using var command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@idDirector", idDirector);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                lista.Add(new
+                {
+                    id_aspirante = Convert.ToInt32(reader["id_aspirante"]),
+                    nombre = reader["nombre"]?.ToString(),
+                    apellido = reader["apellido"]?.ToString(),
+                    email = reader["email"]?.ToString(),
+                    carrera_interes = reader["carrera_interes"]?.ToString()
+                });
+            }
+
+            return lista;
+        }
+
+        public void GuardarCorreoMasivo(int idDirector, string asunto, string mensaje)
+        {
+            using var connection = new SqlConnection(_connectionString);
+            connection.Open();
+
+            var queryIds = @"
+        SELECT a.id_aspirante
+        FROM aspirantes a
+        INNER JOIN modulo_gestion_aspirante m
+            ON a.id_aspirante = m.id_aspirante
+        INNER JOIN directores_carrera d
+            ON d.id_director = @idDirector
+        WHERE a.carrera_interes = d.carrera
+          AND ISNULL(m.indicar_matricula, 0) = 1";
+
+            var ids = new List<int>();
+
+            using (var command = new SqlCommand(queryIds, connection))
+            {
+                command.Parameters.AddWithValue("@idDirector", idDirector);
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    ids.Add(Convert.ToInt32(reader["id_aspirante"]));
+                }
+            }
+
+            foreach (var idAspirante in ids)
+            {
+                var insert = @"
+            INSERT INTO correos_electronicos
+            (id_aspirante, id_director, asunto, contenido)
+            VALUES (@idAspirante, @idDirector, @asunto, @contenido)";
+
+                using var insertCommand = new SqlCommand(insert, connection);
+                insertCommand.Parameters.AddWithValue("@idAspirante", idAspirante);
+                insertCommand.Parameters.AddWithValue("@idDirector", idDirector);
+                insertCommand.Parameters.AddWithValue("@asunto", asunto);
+                insertCommand.Parameters.AddWithValue("@contenido", mensaje);
+
+                insertCommand.ExecuteNonQuery();
+            }
+        }
     }
 
 }
