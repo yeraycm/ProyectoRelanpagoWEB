@@ -53,7 +53,42 @@ namespace SistemaMatricula.Controllers
 
             return StatusCode(500, new { error = "No se pudo actualizar el estado." });
         }
+
+            [HttpPost]
+        public IActionResult CrearAspirante([FromBody] AspiranteDTO asp)
+        {
+            int id = _repo.InsertarAspirante(asp);
+            return Ok(new { mensaje = "Aspirante creado", idAspirante = id });
+        }
+    
+        [HttpGet("carreras")]
+        public IActionResult GetCarreras()
+        {
+            return Ok(_repo.ObtenerCarreras());
+        }
+    
+        [HttpPost("{id}/cita")]
+        public IActionResult GuardarCita(int id, [FromBody] CitaDTO cita)
+        {
+            bool ok = _repo.GuardarCita(id, TimeSpan.Parse(cita.HoraInicio), TimeSpan.Parse(cita.HoraFin));
+    
+            if (ok) return Ok(new { mensaje = "Cita guardada" });
+    
+            return StatusCode(500, new { error = "Error al guardar cita" });
+        }
+    
+        [HttpPost("validar-horario")]
+        public IActionResult ValidarHorario([FromBody] CitaDTO cita)
+        {
+            bool ocupado = _repo.ExisteChoqueHorario(
+                TimeSpan.Parse(cita.HoraInicio),
+                TimeSpan.Parse(cita.HoraFin)
+            );
+    
+            return Ok(new { ocupado });
+        }
     }
+    
 
     // Clase de apoyo para recibir los datos del cambio de carrera
     public class CambioCarreraRequest
