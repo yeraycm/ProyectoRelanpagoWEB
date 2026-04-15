@@ -1,0 +1,73 @@
+<style>
+    .btn-toggle {
+        position: fixed;
+        top: 15px;
+        left: 15px;
+        z-index: 2000;
+        background: #1e3a8a;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        background: linear-gradient(180deg, #1e3a8a, #2563eb);
+        position: fixed;
+        left: -250px; 
+        top: 0;
+        transition: 0.4s;
+        z-index: 1500;
+        padding-top: 80px;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+    }
+
+        .sidebar.active {
+            left: 0; 
+        }
+
+        .sidebar h3 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+        }
+
+            .sidebar a:hover {
+                background: rgba(255, 255, 255, 0.2);
+                padding-left: 35px;
+            }
+</style>
+
+<button class="btn-toggle" onclick="toggleMenu()">☰ Menú</button>
+
+<div class="sidebar" id="sidebar">
+    <h3><i class="bi bi-grid"></i> Sistema</h3>
+    <a href="EncargadoMatricula.html"><i class="bi bi-people"></i> Gestion de Aspirantes</a>
+    <a href="aspirante.html"><i class="bi bi-person-plus"></i> Solicitud de Citas</a>
+    <a href="directorCarrera.html"><i class="bi bi-mortarboard"></i> Director Carrera</a>
+</div>
+
+<script>
+    window.toggleMenu = function () {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) {
+            sidebar.classList.toggle('active');
+        }
+    };
+</script>
