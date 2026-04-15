@@ -1,4 +1,0 @@
-wwwroot\app.js
-wwwroot\EncargadoMatricula.html
-wwwroot\aspirante.html
-wwwroot\Menu.html
