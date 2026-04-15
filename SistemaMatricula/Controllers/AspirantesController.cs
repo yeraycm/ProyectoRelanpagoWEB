@@ -87,6 +87,14 @@ namespace SistemaMatricula.Controllers
     
             return Ok(new { ocupado });
         }
+        [HttpGet("{id}/cita-detalle")]
+        public IActionResult GetCitaDetalle(int id)
+        {
+            var cita = _repo.ObtenerCitaPorId(id);
+            if (cita == null) return NotFound(new { mensaje = "El aspirante no tiene una cita asignada." });
+
+            return Ok(cita);
+        }
     }
     
 
